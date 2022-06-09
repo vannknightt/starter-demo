@@ -17,9 +17,13 @@
 
     <div class="todos">
       <a-table :dataSource="allTodos" :columns="columns">
+        <template slot="completed" slot-scope="text">
+          {{text}}
+        </template>
         <template slot="title" slot-scope="text, record">
           <a-input
             v-if="editable"
+            :value="text"
             @change="saveTitle($event.target.value, record.id)"
           ></a-input>
           <p v-else>
@@ -27,10 +31,11 @@
           </p>
         </template>
 
-        <template slot="completed" slot-scope="text, record">
+        <template slot="userid" slot-scope="text, record">
           <a-input
             v-if="editable"
-            @change="saveCompleted($event.target.value, record.id)"
+            :value="text"
+            @change="saveUserId($event.target.value, record.id)"
           ></a-input>
           <p v-else>
             {{ text }}
@@ -39,7 +44,7 @@
 
         <template slot="operation" slot-scope="text, record">
           <a v-if="editable === false" v-on:click="changeEdit">Edit</a>
-          <a v-if="editable === true" v-on:click="saveEdit(record.id)">Save</a>
+          <a v-if="editable === true" v-on:click="changeEdit">Save</a>
 
           <a-divider type="vertical" />
           <a v-on:click="deleteTodo(record.id)">Delete</a>
@@ -78,6 +83,8 @@ export default {
           title: "userId",
           dataIndex: "userId",
           key: "userId",
+          scopedSlots: { customRender: "userid" },
+
         },
         {
           title: "Title",
@@ -107,32 +114,29 @@ export default {
   },
   computed: mapGetters(["allTodos"]),
   methods: {
-    ...mapActions(["getTodos", "delTodo"]),
+    ...mapActions(["getTodos", "delTodo", "setTodos"]),
     deleteTodo(id) {
       this.delTodo(id);
     },
     changeEdit() {
       this.editable = !this.editable;
     },
-    saveEdit(id) {
-      // console.log('save edit id ' + id);
-      // let target = this.allTodos.filter(item => item.id === id)
-      // console.log(JSON.stringify(target));
+    saveEdit() {
+      this.editable = !this.editable;
+      this.setTodos(this.allTodos);
     },
     saveTitle(val, id) {
       console.log("title value : " + val + " id : " + id);
-      let findIdx = this.allTodos.filter((item) => item.id === id);
-
-      // this.allTodos[findIdx].title = val;
+      let findIdx = this.allTodos.findIndex((item) => item.id === id);
+      console.log('find index : ' + findIdx);
+      this.allTodos[findIdx].title = val;
 
       console.log(JSON.stringify(this.allTodos[findIdx]));
     },
-    saveCompleted(val, id) {
-      console.log("completed value : " + val + " id : " + id);
-      let findIdx = this.allTodos.filter((item) => item.id === id);
-
-      // this.allTodos[findIdx].title = val;
-
+    saveUserId(val, id) {
+      console.log("user id value : " + val + " id : " + id);
+      let findIdx = this.allTodos.findIndex((item) => item.id === id);
+      this.allTodos[findIdx].userId = val;
       console.log(JSON.stringify(this.allTodos[findIdx]));
     },
   },

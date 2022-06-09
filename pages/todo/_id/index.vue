@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <nuxt-link to="/" >
       <h1><a>Back to Todo</a></h1>
     </nuxt-link>
@@ -14,19 +13,29 @@
 
 <script>
 
-import {mapActions} from 'vuex';
+import {mapGetters, mapActions} from 'vuex';
 
 export default {
   data() {
     return {
       todo: {},
+      id: -1,
     }
   },
   created() {
     let cid = this.$route.params.id;
-    this.getTodoById(cid).then((val) => {
-      this.todo = val;
-    })
+    this.id = parseInt(cid);
+    // this.todo = getters.getTodoById(cid);
+  },
+  computed: {
+    ...mapGetters(["getTodoById"])
+  },
+  mounted() {
+    console.log('id value : ' + this.id);
+    console.log('type of id: ' + typeof this.id);
+    console.log(JSON.stringify(this.getTodoById(this.id)));
+
+    this.todo = this.getTodoById(this.id)[0];
   },
   methods: {
     ...mapActions(["getTodoById"]),

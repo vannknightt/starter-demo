@@ -1,4 +1,5 @@
 import axios from "axios";
+import Vuex from "vuex";
 
 const state = {
   todos: [],
@@ -6,6 +7,9 @@ const state = {
 
 const getters = {
   allTodos: (state) => state.todos,
+  getTodoById: (state) => (id) => {
+    return state.todos.filter(todo => todo.id === id)
+  }
 };
 
 const actions = {
@@ -17,10 +21,8 @@ const actions = {
     })));
     return res.data;
   },
-  async getTodoById({commit}, id) {
-    let url = "https://jsonplaceholder.typicode.com/todos/" + id;
-    const res = await axios.get(url);
-    return res.data;
+  setTodos({commit}, todos) {
+    commit('setTodos', todos);
   },
   async addTodo({commit}, title) {
     const res = await axios.post("https://jsonplaceholder.typicode.com/todos", {userId: 10, title, completed: false});
@@ -60,7 +62,6 @@ const mutations = {
   },
   updateTodo(state, id, updTodo) {
     let findIdx = state.todos.findIndex(todo => todo.id === id);
-
     // console.log('before update to do' + JSON.stringify(state.todos[findIdx]));
     state.todos[findIdx] = updTodo;
     // console.log('after update to do' + JSON.stringify(state.todos[findIdx]));
