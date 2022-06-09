@@ -1,16 +1,16 @@
 <template>
   <div class="container">
-    <Todos />
+    <Todo />
   </div>
 </template>
 
 <script>
 
-import Todos from "./Todos.vue"
+import Todo from "./todo/index.vue";
 export default {
   name: 'IndexPage',
   components: {
-    Todos,
+    Todo,
   }
 }
 </script>

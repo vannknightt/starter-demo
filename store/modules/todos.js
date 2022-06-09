@@ -11,9 +11,17 @@ const getters = {
 const actions = {
   async getTodos({commit}) {
     const res = await axios.get("https://jsonplaceholder.typicode.com/todos");
-    commit("setTodos", res.data);
+    commit("setTodos", res.data.map(item => ({
+      ...item,
+      editable: false,
+    })));
+    return res.data;
   },
-
+  async getTodoById({commit}, id) {
+    let url = "https://jsonplaceholder.typicode.com/todos/" + id;
+    const res = await axios.get(url);
+    return res.data;
+  },
   async addTodo({commit}, title) {
     const res = await axios.post("https://jsonplaceholder.typicode.com/todos", {userId: 10, title, completed: false});
     // console.log('after adddata on axios' + JSON.stringify(res.data));
@@ -32,8 +40,8 @@ const actions = {
     // console.log('afterk filter data' + JSON.stringify(res.data));
     commit('setTodos', res.data);
   },
-  updateTodo({commit}, id) {
-    commit('updateTodo', id);
+  updateTodo({commit}, id, updTodo) {
+    commit('updateTodo', id, updTodo);
   }
 };
 
@@ -50,12 +58,12 @@ const mutations = {
   delTodo(state, id) {
     state.todos = state.todos.filter(todo => todo.id !== id);
   },
-  updateTodo(state, id) {
+  updateTodo(state, id, updTodo) {
     let findIdx = state.todos.findIndex(todo => todo.id === id);
 
-    console.log('before update to do' + JSON.stringify(state.todos[findIdx]));
-    state.todos[findIdx].completed = !state.todos[findIdx].completed;
-    console.log('after update to do' + JSON.stringify(state.todos[findIdx]));
+    // console.log('before update to do' + JSON.stringify(state.todos[findIdx]));
+    state.todos[findIdx] = updTodo;
+    // console.log('after update to do' + JSON.stringify(state.todos[findIdx]));
   }
 };
 
