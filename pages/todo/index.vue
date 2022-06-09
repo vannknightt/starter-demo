@@ -16,12 +16,12 @@
     <br />
 
     <div class="todos">
-      <a-table :dataSource="data" :columns="columns">
+      <a-table :dataSource="allTodos" :columns="columns">
         <template slot="title" slot-scope="text, record">
           <a-input
             v-if="editable"
             :value="text"
-            @change="getTitle($event.target.value, record.id)"
+            @change="saveTitle($event.target.value, record.id)"
           ></a-input>
           <p v-else>
             {{ text }}
@@ -32,7 +32,7 @@
           <a-input
             v-if="editable"
             :value="text"
-            @change="getCompleted($event.target.value)"
+            @change="saveCompleted($event.target.value)"
           ></a-input>
           <p v-else>
             {{ text }}
@@ -41,7 +41,7 @@
 
         <template slot="operation" slot-scope="text, record">
           <a v-if="editable === false" v-on:click="changeEdit">Edit</a>
-          <a v-if="editable === true" v-on:click="saveEdit">Save</a>
+          <a v-if="editable === true" v-on:click="saveEdit(record.id)">Save</a>
 
           <a-divider type="vertical" />
           <a v-on:click="deleteTodo(record.id)">Delete</a>
@@ -111,24 +111,25 @@ export default {
   methods: {
     ...mapActions(["getTodos", "delTodo"]),
     deleteTodo(id) {
+      console.log('call delete to do ' + id);
       this.delTodo(id);
     },
-    // handleChange(value, id, col) {
-    //   const newData = [...this.data];
-    //   const target = newData.find((item) => id === item.id);
-    //   if (target) {
-    //     target[col] = value;
-    //     this.data = newData;
-    //   }
-    // },
     changeEdit() {
       this.editable = !this.editable;
     },
-    getTitle(val, id) {
-      console.log("title value : " + val + " id : " + id);
+    saveEdit(id) {
+      // console.log('save edit id ' + id);
+      // let target = this.allTodos.filter(item => item.id === id)
+      // console.log(JSON.stringify(target));
     },
-    getCompleted(val) {
-      console.log("completed value : " + val);
+    saveTitle(val, id) {
+      // console.log("title value : " + val + " id : " + id);
+      // let findIdx = this.allTodos.filter(item => item.id === id);
+      // this.allTodos[findIdx].title = val;
+    },
+    saveCompleted(val, id) {
+      // let findIdx = this.allTodos.filter(item => item.id === id);
+      // this.allTodos[findIdx].completed = val;
     },
   },
 };
