@@ -32,7 +32,7 @@
           <a-input
             v-if="editable"
             :value="text"
-            @change="saveCompleted($event.target.value)"
+            @change="saveCompleted($event.target.value, record.id)"
           ></a-input>
           <p v-else>
             {{ text }}
@@ -123,8 +123,9 @@ export default {
       // console.log(JSON.stringify(target));
     },
     saveTitle(val, id) {
-      // console.log("title value : " + val + " id : " + id);
+      console.log("title value : " + val + " id : " + id);
       // let findIdx = this.allTodos.filter(item => item.id === id);
+
       // this.allTodos[findIdx].title = val;
     },
     saveCompleted(val, id) {
