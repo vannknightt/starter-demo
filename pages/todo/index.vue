@@ -20,7 +20,6 @@
         <template slot="title" slot-scope="text, record">
           <a-input
             v-if="editable"
-            :value="text"
             @change="saveTitle($event.target.value, record.id)"
           ></a-input>
           <p v-else>
@@ -28,10 +27,9 @@
           </p>
         </template>
 
-        <template slot="completed" slot-scope="text">
+        <template slot="completed" slot-scope="text, record">
           <a-input
             v-if="editable"
-            :value="text"
             @change="saveCompleted($event.target.value, record.id)"
           ></a-input>
           <p v-else>
@@ -111,7 +109,6 @@ export default {
   methods: {
     ...mapActions(["getTodos", "delTodo"]),
     deleteTodo(id) {
-      console.log('call delete to do ' + id);
       this.delTodo(id);
     },
     changeEdit() {
@@ -124,13 +121,19 @@ export default {
     },
     saveTitle(val, id) {
       console.log("title value : " + val + " id : " + id);
-      // let findIdx = this.allTodos.filter(item => item.id === id);
+      let findIdx = this.allTodos.filter((item) => item.id === id);
 
       // this.allTodos[findIdx].title = val;
+
+      console.log(JSON.stringify(this.allTodos[findIdx]));
     },
     saveCompleted(val, id) {
-      // let findIdx = this.allTodos.filter(item => item.id === id);
-      // this.allTodos[findIdx].completed = val;
+      console.log("completed value : " + val + " id : " + id);
+      let findIdx = this.allTodos.filter((item) => item.id === id);
+
+      // this.allTodos[findIdx].title = val;
+
+      console.log(JSON.stringify(this.allTodos[findIdx]));
     },
   },
 };
