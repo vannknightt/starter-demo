@@ -17,7 +17,7 @@ const actions = {
     const res = await axios.get("https://jsonplaceholder.typicode.com/todos");
     commit("setTodos", res.data.map(item => ({
       ...item,
-      editable: false,
+      editable: true,
     })));
     return res.data;
   },

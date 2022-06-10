@@ -17,8 +17,16 @@
 
     <div class="todos">
       <a-table :dataSource="allTodos" :columns="columns">
-        <template slot="completed" slot-scope="text">
-          {{ text }}
+
+        <template slot="userid" slot-scope="text, record">
+          <a-input
+            v-if="editable"
+            :value="text"
+            @change="saveUserId($event.target.value, record.id)"
+          ></a-input>
+          <p v-else-if="record">
+            {{ record.userId }}
+          </p>
         </template>
         <template slot="title" slot-scope="text, record">
           <a-input
@@ -26,20 +34,14 @@
             :value="text"
             @change="saveTitle($event.target.value, record.id)"
           ></a-input>
-          <p v-else>
-            {{ text }}
+          <p v-else-if="record">
+            {{ record.title }}
           </p>
         </template>
-        <template slot="userid" slot-scope="text, record">
-          <a-input
-            v-if="editable"
-            :value="text"
-            @change="saveUserId($event.target.value, record.id)"
-          ></a-input>
-          <p v-else>
-            {{ text }}
-          </p>
+        <template slot="completed" slot-scope="text">
+          {{text}}
         </template>
+
         <template slot="operation" slot-scope="text, record">
           <a v-if="editable === false" v-on:click="changeEdit">Edit</a>
 
@@ -48,7 +50,6 @@
           <a v-if="editable === true" v-on:click="cancelEdit(record.id)"
             >Cancel</a
           >
-
           <a-divider type="vertical" />
           <a v-on:click="deleteTodo(record.id)">Delete</a>
           <a-divider type="vertical" />
@@ -89,13 +90,13 @@ export default {
           scopedSlots: { customRender: "userid" },
         },
         {
-          title: "Title",
+          title: "title",
           dataIndex: "title",
           key: "title",
           scopedSlots: { customRender: "title" },
         },
         {
-          title: "Completed",
+          title: "completed",
           dataIndex: "completed",
           key: "completed",
           scopedSlots: { customRender: "completed" },
@@ -125,6 +126,18 @@ export default {
     },
     saveEdit(id) {
       console.log("save edit hit by id : " + id);
+
+      // const newData = [...this.data];
+      // const newCacheData = [...this.cacheData];
+
+      // const target = newData.find((todo) => todo === todo.id);
+      // const targetCache = newCacheData.find((todo) => todo === todo.id);
+      // if (target && targetCache) {
+      //   this.allTodos = newData;
+      //   Object.assign(targetCache, target);
+      //   this.cacheData = newCacheData;
+      // }
+
       let findIdx = this.allTodos.findIndex((todo) => todo.id === id);
 
       console.log(
@@ -139,43 +152,64 @@ export default {
       this.editable = !this.editable;
     },
     cancelEdit(id) {
-      const newData = [...this.allTodos];
-      const target = newData.find(todo => todo.id = id);
-      if(target) {
-        Object.assign(target, this.cacheData.find(todo => todo.id === id));
-        this.allTodos = newData;
-      }
+      console.log("id in cancelEdit : " + id);
+      // const newData = [...this.allTodos];
 
-      // let findIdx = this.allTodos.findIndex((todo) => todo.id === id);
-      // console.log(
-      //   "allTodos before cancel edit : " + JSON.stringify(this.allTodos[findIdx])
-      // );
-      // console.log(
-      //   "cache data in findidx : " + JSON.stringify(this.cacheData[findIdx])
-      // );
+      // const target = this.allTodos.find((todo) => todo.id === id);
+      // if (target) {
+      //   Object.assign(
+      //     target,
+      //     this.cacheData.find((todo) => todo.id === id)
+      //   );
+      //   // this.allTodos = newData;
+      // }
+
+      let findIdx = this.allTodos.findIndex((todo) => todo.id === id);
+      console.log(
+        "allTodos before cancel edit : " +
+          JSON.stringify(this.allTodos[findIdx])
+      );
+      console.log(
+        "cache data in findidx : " + JSON.stringify(this.cacheData[findIdx])
+      );
+
       // this.allTodos[findIdx] = JSON.parse(
       //   JSON.stringify(this.cacheData[findIdx])
       // );
+      Object.assign(this.allTodos[findIdx], this.cacheData[findIdx]);
 
-      // this.setTodos(this.allTodos);
-      // console.log(
-      //   "allTodos after cancel edit : " + JSON.stringify(this.allTodos[findIdx])
-      // );
+      console.log(
+        "allTodos after cancel edit : " + JSON.stringify(this.allTodos[findIdx])
+      );
       this.editable = !this.editable;
     },
     saveTitle(val, id) {
-      console.log("title value : " + val + " id : " + id);
-      let findIdx = this.allTodos.findIndex((item) => item.id === id);
-      console.log("find index : " + findIdx);
-      this.allTodos[findIdx].title = val;
+      // console.log("title value : " + val + " id : " + id);
 
-      // console.log(JSON.stringify(this.allTodos[findIdx]));
+      // const newData = [...this.allTodos];
+      // const target = newData.find((todo) => todo.id === id);
+      // if (target) {
+      //   target["title"] = val;
+      //   this.allTodos = newData;
+      // }
+
+      let findIdx = this.allTodos.findIndex((item) => item.id === id);
+      this.allTodos[findIdx].title = val;
+      console.log(JSON.stringify(this.allTodos[findIdx]));
     },
     saveUserId(val, id) {
-      console.log("user id value : " + val + " id : " + id);
+      // console.log("user id value : " + val + " id : " + id);
+
+      // const newData = [...this.allTodos];
+      // const target = newData.find((todo) => todo.id === id);
+      // if (target) {
+      //   target["userId"] = val;
+      //   this.allTodos = newData;
+      // }
+
       let findIdx = this.allTodos.findIndex((item) => item.id === id);
       this.allTodos[findIdx].userId = val;
-      // console.log(JSON.stringify(this.allTodos[findIdx]));
+      console.log(JSON.stringify(this.allTodos[findIdx]));
     },
   },
 };
