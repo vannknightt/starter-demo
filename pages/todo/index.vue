@@ -18,7 +18,7 @@
     <div class="todos">
       <a-table :dataSource="allTodos" :columns="columns">
         <template slot="completed" slot-scope="text">
-          {{text}}
+          {{ text }}
         </template>
         <template slot="title" slot-scope="text, record">
           <a-input
@@ -30,7 +30,6 @@
             {{ text }}
           </p>
         </template>
-
         <template slot="userid" slot-scope="text, record">
           <a-input
             v-if="editable"
@@ -41,15 +40,18 @@
             {{ text }}
           </p>
         </template>
-
         <template slot="operation" slot-scope="text, record">
           <a v-if="editable === false" v-on:click="changeEdit">Edit</a>
-          <a v-if="editable === true" v-on:click="changeEdit">Save</a>
+
+          <a v-if="editable === true" v-on:click="saveEdit(record.id)">Save</a>
+          <a-divider v-if="editable === true" type="vertical" />
+          <a v-if="editable === true" v-on:click="cancelEdit(record.id)"
+            >Cancel</a
+          >
 
           <a-divider type="vertical" />
           <a v-on:click="deleteTodo(record.id)">Delete</a>
           <a-divider type="vertical" />
-
           <nuxt-link :to="`/todo/${record.id}`"> Details </nuxt-link>
         </template>
       </a-table>
@@ -64,6 +66,7 @@ export default {
   name: "Todo",
   data() {
     return {
+      cacheData: [],
       data: [],
       titleVal: "",
       completedVal: "",
@@ -84,7 +87,6 @@ export default {
           dataIndex: "userId",
           key: "userId",
           scopedSlots: { customRender: "userid" },
-
         },
         {
           title: "Title",
@@ -109,7 +111,7 @@ export default {
   },
   created() {
     this.getTodos().then((val) => {
-      this.data = val;
+      this.cacheData = [...val];
     });
   },
   computed: mapGetters(["allTodos"]),
@@ -121,23 +123,59 @@ export default {
     changeEdit() {
       this.editable = !this.editable;
     },
-    saveEdit() {
+    saveEdit(id) {
+      console.log("save edit hit by id : " + id);
+      let findIdx = this.allTodos.findIndex((todo) => todo.id === id);
+
+      console.log(
+        "allTodos data in findidx in saveEdit : " +
+          findIdx +
+          " " +
+          JSON.stringify(this.allTodos[findIdx])
+      );
+      this.cacheData[findIdx] = JSON.parse(
+        JSON.stringify(this.allTodos[findIdx])
+      );
       this.editable = !this.editable;
-      this.setTodos(this.allTodos);
+    },
+    cancelEdit(id) {
+      const newData = [...this.allTodos];
+      const target = newData.find(todo => todo.id = id);
+      if(target) {
+        Object.assign(target, this.cacheData.find(todo => todo.id === id));
+        this.allTodos = newData;
+      }
+
+      // let findIdx = this.allTodos.findIndex((todo) => todo.id === id);
+      // console.log(
+      //   "allTodos before cancel edit : " + JSON.stringify(this.allTodos[findIdx])
+      // );
+      // console.log(
+      //   "cache data in findidx : " + JSON.stringify(this.cacheData[findIdx])
+      // );
+      // this.allTodos[findIdx] = JSON.parse(
+      //   JSON.stringify(this.cacheData[findIdx])
+      // );
+
+      // this.setTodos(this.allTodos);
+      // console.log(
+      //   "allTodos after cancel edit : " + JSON.stringify(this.allTodos[findIdx])
+      // );
+      this.editable = !this.editable;
     },
     saveTitle(val, id) {
       console.log("title value : " + val + " id : " + id);
       let findIdx = this.allTodos.findIndex((item) => item.id === id);
-      console.log('find index : ' + findIdx);
+      console.log("find index : " + findIdx);
       this.allTodos[findIdx].title = val;
 
-      console.log(JSON.stringify(this.allTodos[findIdx]));
+      // console.log(JSON.stringify(this.allTodos[findIdx]));
     },
     saveUserId(val, id) {
       console.log("user id value : " + val + " id : " + id);
       let findIdx = this.allTodos.findIndex((item) => item.id === id);
       this.allTodos[findIdx].userId = val;
-      console.log(JSON.stringify(this.allTodos[findIdx]));
+      // console.log(JSON.stringify(this.allTodos[findIdx]));
     },
   },
 };
