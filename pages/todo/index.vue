@@ -27,16 +27,18 @@
             {{ record.userId }}
           </p>
         </template>
-        <!-- <template slot="title" slot-scope="text, record">
-          <a-input
-            v-if="record.editable"
-            :value="text"
-            @change="saveTitle($event.target.value, record.id)"
-          ></a-input>
-          <p v-else-if="record">
-            {{ record.title }}
-          </p>
-        </template> -->
+        <template slot="title" slot-scope="text, record">
+          <div v-if="record">
+            <a-input
+              v-if="record.editable"
+              :value="text"
+              @change="saveTitle($event.target.value, record.id)"
+            ></a-input>
+            <p v-else-if="record">
+              {{ record.title }}
+            </p>
+          </div>
+        </template>
         <template slot="completed" slot-scope="text">
           {{ text }}
         </template>
@@ -92,7 +94,7 @@ export default {
           scopedSlots: { customRender: "userid" },
         },
         {
-          title: "title",
+          title: "Title",
           dataIndex: "title",
           key: "title",
           scopedSlots: { customRender: "title" },

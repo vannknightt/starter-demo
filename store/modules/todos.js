@@ -52,9 +52,9 @@ const actions = {
 const mutations = {
   setTodos(state, todos) {
     state.todos = todos;
-    // state.todos.forEach(todo => {
-    //   console.log(JSON.stringify(todo));
-    // });
+    state.todos.forEach(todo => {
+      console.log(JSON.stringify(todo));
+    });
   },
   addTodo(state, todo) {
     state.todos.unshift(todo);
