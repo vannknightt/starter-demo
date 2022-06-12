@@ -15,11 +15,13 @@ const getters = {
 const actions = {
   async getTodos({commit}) {
     const res = await axios.get("https://jsonplaceholder.typicode.com/todos");
-    commit("setTodos", res.data.map(item => ({
+
+    const newres = res.data.map(item => ({
       ...item,
-      editable: true,
-    })));
-    return res.data;
+      editable: false,
+    }));
+    commit("setTodos", newres);
+    return newres;
   },
   setTodos({commit}, todos) {
     commit('setTodos', todos);

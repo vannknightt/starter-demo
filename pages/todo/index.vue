@@ -17,10 +17,9 @@
 
     <div class="todos">
       <a-table :dataSource="allTodos" :columns="columns">
-
         <template slot="userid" slot-scope="text, record">
           <a-input
-            v-if="editable"
+            v-if="record.editable"
             :value="text"
             @change="saveUserId($event.target.value, record.id)"
           ></a-input>
@@ -28,26 +27,29 @@
             {{ record.userId }}
           </p>
         </template>
-        <template slot="title" slot-scope="text, record">
+        <!-- <template slot="title" slot-scope="text, record">
           <a-input
-            v-if="editable"
+            v-if="record.editable"
             :value="text"
             @change="saveTitle($event.target.value, record.id)"
           ></a-input>
           <p v-else-if="record">
             {{ record.title }}
           </p>
-        </template>
+        </template> -->
         <template slot="completed" slot-scope="text">
-          {{text}}
+          {{ text }}
         </template>
 
         <template slot="operation" slot-scope="text, record">
-          <a v-if="editable === false" v-on:click="changeEdit">Edit</a>
-
-          <a v-if="editable === true" v-on:click="saveEdit(record.id)">Save</a>
-          <a-divider v-if="editable === true" type="vertical" />
-          <a v-if="editable === true" v-on:click="cancelEdit(record.id)"
+          <a v-if="record.editable === false" v-on:click="changeEdit(record.id)"
+            >Edit</a
+          >
+          <a v-if="record.editable === true" v-on:click="saveEdit(record.id)"
+            >Save</a
+          >
+          <a-divider v-if="record.editable === true" type="vertical" />
+          <a v-if="record.editable === true" v-on:click="cancelEdit(record.id)"
             >Cancel</a
           >
           <a-divider type="vertical" />
@@ -96,7 +98,7 @@ export default {
           scopedSlots: { customRender: "title" },
         },
         {
-          title: "completed",
+          title: "Completed",
           dataIndex: "completed",
           key: "completed",
           scopedSlots: { customRender: "completed" },
@@ -112,7 +114,10 @@ export default {
   },
   created() {
     this.getTodos().then((val) => {
-      this.cacheData = [...val];
+      this.cacheData = JSON.parse(JSON.stringify(val));
+    });
+    this.allTodos.forEach((element) => {
+      console.log(JSON.stringify(element));
     });
   },
   computed: mapGetters(["allTodos"]),
@@ -121,8 +126,21 @@ export default {
     deleteTodo(id) {
       this.delTodo(id);
     },
-    changeEdit() {
-      this.editable = !this.editable;
+    changeEdit(id) {
+      let findIdx = this.allTodos.findIndex((item) => item.id === id);
+
+      console.log(
+        "allTodos before change edit : " +
+          JSON.stringify(this.allTodos[findIdx])
+      );
+      console.log(
+        "cache data in findidx : " + JSON.stringify(this.cacheData[findIdx])
+      );
+      this.allTodos[findIdx].editable = !this.allTodos[findIdx].editable;
+      console.log(
+        "allTodos after change edit : " + JSON.stringify(this.allTodos[findIdx])
+      );
+      // this.editable = !this.editable;
     },
     saveEdit(id) {
       console.log("save edit hit by id : " + id);
@@ -146,10 +164,15 @@ export default {
           " " +
           JSON.stringify(this.allTodos[findIdx])
       );
+
+      this.allTodos[findIdx].editable = !this.allTodos[findIdx].editable;
+
       this.cacheData[findIdx] = JSON.parse(
         JSON.stringify(this.allTodos[findIdx])
       );
-      this.editable = !this.editable;
+      console.log(
+        "allTodos after save edit : " + JSON.stringify(this.allTodos[findIdx])
+      );
     },
     cancelEdit(id) {
       console.log("id in cancelEdit : " + id);
@@ -173,15 +196,12 @@ export default {
         "cache data in findidx : " + JSON.stringify(this.cacheData[findIdx])
       );
 
-      // this.allTodos[findIdx] = JSON.parse(
-      //   JSON.stringify(this.cacheData[findIdx])
-      // );
+      // this.allTodos[findIdx] = this.cacheData[findIdx];
       Object.assign(this.allTodos[findIdx], this.cacheData[findIdx]);
-
+      // this.allTodos[findIdx].editable = !this.allTodos[findIdx].editable;
       console.log(
         "allTodos after cancel edit : " + JSON.stringify(this.allTodos[findIdx])
       );
-      this.editable = !this.editable;
     },
     saveTitle(val, id) {
       // console.log("title value : " + val + " id : " + id);
@@ -195,6 +215,10 @@ export default {
 
       let findIdx = this.allTodos.findIndex((item) => item.id === id);
       this.allTodos[findIdx].title = val;
+      console.log(
+        "cache data in findidx in saveTitle : " +
+          JSON.stringify(this.cacheData[findIdx])
+      );
       console.log(JSON.stringify(this.allTodos[findIdx]));
     },
     saveUserId(val, id) {
@@ -209,6 +233,10 @@ export default {
 
       let findIdx = this.allTodos.findIndex((item) => item.id === id);
       this.allTodos[findIdx].userId = val;
+      console.log(
+        "cache data in findidx in saveUserid : " +
+          JSON.stringify(this.cacheData[findIdx])
+      );
       console.log(JSON.stringify(this.allTodos[findIdx]));
     },
   },
