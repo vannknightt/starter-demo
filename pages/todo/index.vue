@@ -18,14 +18,16 @@
     <div class="todos">
       <a-table :dataSource="allTodos" :columns="columns">
         <template slot="userid" slot-scope="text, record">
-          <a-input
-            v-if="record.editable"
-            :value="text"
-            @change="saveUserId($event.target.value, record.id)"
-          ></a-input>
-          <p v-else-if="record">
-            {{ record.userId }}
-          </p>
+          <div v-if="record">
+            <a-input
+              v-if="record.editable"
+              :value="text"
+              @change="saveUserId($event.target.value, record.id)"
+            ></a-input>
+            <p v-else-if="record">
+              {{ record.userId }}
+            </p>
+          </div>
         </template>
         <template slot="title" slot-scope="text, record">
           <div v-if="record">
@@ -44,20 +46,26 @@
         </template>
 
         <template slot="operation" slot-scope="text, record">
-          <a v-if="record.editable === false" v-on:click="changeEdit(record.id)"
-            >Edit</a
-          >
-          <a v-if="record.editable === true" v-on:click="saveEdit(record.id)"
-            >Save</a
-          >
-          <a-divider v-if="record.editable === true" type="vertical" />
-          <a v-if="record.editable === true" v-on:click="cancelEdit(record.id)"
-            >Cancel</a
-          >
-          <a-divider type="vertical" />
-          <a v-on:click="deleteTodo(record.id)">Delete</a>
-          <a-divider type="vertical" />
-          <nuxt-link :to="`/todo/${record.id}`"> Details </nuxt-link>
+          <div v-if="record">
+            <a
+              v-if="record.editable === false"
+              v-on:click="changeEdit(record.id)"
+              >Edit</a
+            >
+            <a v-if="record.editable === true" v-on:click="saveEdit(record.id)"
+              >Save</a
+            >
+            <a-divider v-if="record.editable === true" type="vertical" />
+            <a
+              v-if="record.editable === true"
+              v-on:click="cancelEdit(record.id)"
+              >Cancel</a
+            >
+            <a-divider type="vertical" />
+            <a v-on:click="deleteTodo(record.id)">Delete</a>
+            <a-divider type="vertical" />
+            <nuxt-link :to="`/todo/${record.id}`"> Details </nuxt-link>
+          </div>
         </template>
       </a-table>
     </div>
